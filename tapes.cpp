@@ -29,3 +29,24 @@ tapes::FileTape::FileTape(const std::string& filename, size_t size, const Config
   }
 }
 
+tapes::FileTape::~FileTape()
+{
+  if (file_.is_open())
+  {
+    file_.close();
+  }
+}
+
+int tapes::FileTape::read()
+{
+  simDelay(config_.readDelay);
+
+  int value = 0;
+  file_.seekp(pos_ * sizeof(int));
+  file_.read(reinterpret_cast< char* >(&value), sizeof(value));
+  if (file_.fail())
+  {
+    throw std::runtime_error("Failed to read");
+  }
+  return value;
+}

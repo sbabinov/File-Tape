@@ -35,12 +35,13 @@ namespace tapes
     FileTape(const std::string& filename, size_t size, const Config& config);
     ~FileTape();
 
-    virtual int read() const override;
+    virtual int read() override;
   private:
     std::fstream file_;
+    size_t pos_;
     Config config_;
 
-    void simDelay() const {};
+    void simDelay(size_t time) const {};
   };
 }
 

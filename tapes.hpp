@@ -19,12 +19,12 @@ namespace tapes
     Tape(size_t size);
     virtual ~Tape() = default;
 
-    size_t size();
-    virtual int read();
-    virtual void write(int value);
-    virtual void moveForward();
-    virtual void moveBackward();
-    virtual void rewind();
+    size_t size() const;
+    virtual int read() = 0;
+    virtual void write(int value) = 0;
+    virtual void moveForward() = 0;
+    virtual void moveBackward() = 0;
+    virtual void rewind() = 0;
   protected:
     size_t size_;
   };
@@ -45,7 +45,7 @@ namespace tapes
     size_t pos_;
     Config config_;
 
-    void simDelay(size_t time) const {};
+    void simDelay(size_t ms) const;
   };
 }
 

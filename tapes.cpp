@@ -1,12 +1,21 @@
 #include "tapes.hpp"
 #include <ios>
+#include <iostream>
+#include <thread>
+#include <chrono>
 
 tapes::Tape::Tape(size_t size):
   size_(size)
 {}
 
+size_t tapes::Tape::size() const
+{
+  return size_;
+}
+
 tapes::FileTape::FileTape(const std::string& filename, size_t size, const Config& config):
   Tape(size),
+  pos_(0),
   config_(config)
 {
   file_.open(filename, std::ios::in | std::ios::out | std::ios::binary);
@@ -80,4 +89,9 @@ void tapes::FileTape::rewind()
 {
   simDelay(config_.rewindDelay);
   pos_ = 0;
+}
+
+void tapes::FileTape::simDelay(size_t ms) const
+{
+  std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }

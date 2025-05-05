@@ -42,11 +42,24 @@ int tapes::FileTape::read()
   simDelay(config_.readDelay);
 
   int value = 0;
-  file_.seekp(pos_ * sizeof(int));
+  file_.seekg(pos_ * sizeof(int));
   file_.read(reinterpret_cast< char* >(&value), sizeof(value));
   if (file_.fail())
   {
     throw std::runtime_error("Failed to read");
   }
   return value;
+}
+
+void tapes::FileTape::write(int value)
+{
+  simDelay(config_.writeDelay);
+
+  file_.seekp(pos_ * sizeof(int));
+  file_.write(reinterpret_cast< const char* >(&value), sizeof(value));
+  file_.flush();
+  if (file_.fail())
+  {
+    throw std::runtime_error("Failed to write");
+  }
 }

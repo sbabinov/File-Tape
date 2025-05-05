@@ -20,11 +20,11 @@ namespace tapes
     virtual ~Tape() = default;
 
     size_t size();
-    virtual int read() const;
-    virtual void write();
-    virtual void rewind();
+    virtual int read();
+    virtual void write(int value);
     virtual void moveForward();
     virtual void moveBackward();
+    virtual void rewind();
   protected:
     size_t size_;
   };
@@ -36,6 +36,7 @@ namespace tapes
     ~FileTape();
 
     virtual int read() override;
+    virtual void write(int value) override;
   private:
     std::fstream file_;
     size_t pos_;

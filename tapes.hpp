@@ -1,5 +1,6 @@
 #ifndef TAPES_HPP
 #define TAPES_HPP
+#include <fstream>
 #include <string>
 
 namespace tapes
@@ -15,16 +16,31 @@ namespace tapes
   class Tape
   {
   public:
+    Tape(size_t size);
     virtual ~Tape() = default;
 
     size_t size();
-    virtual int read();
+    virtual int read() const;
     virtual void write();
     virtual void rewind();
     virtual void moveForward();
     virtual void moveBackward();
   protected:
     size_t size_;
+  };
+
+  class FileTape: public Tape
+  {
+  public:
+    FileTape(const std::string& filename, size_t size, const Config& config);
+    ~FileTape();
+
+    virtual int read() const override;
+  private:
+    std::fstream file_;
+    Config config_;
+
+    void simDelay() const {};
   };
 }
 

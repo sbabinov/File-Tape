@@ -63,3 +63,21 @@ void tapes::FileTape::write(int value)
     throw std::runtime_error("Failed to write");
   }
 }
+
+void tapes::FileTape::moveForward()
+{
+  simDelay(config_.moveDelay);
+  ++pos_;
+}
+
+void tapes::FileTape::moveBackward()
+{
+  simDelay(config_.moveDelay);
+  --pos_;
+}
+
+void tapes::FileTape::rewind()
+{
+  simDelay(config_.rewindDelay);
+  pos_ = 0;
+}

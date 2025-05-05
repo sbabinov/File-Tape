@@ -37,6 +37,9 @@ namespace tapes
 
     virtual int read() override;
     virtual void write(int value) override;
+    virtual void moveForward() override;
+    virtual void moveBackward() override;
+    virtual void rewind() override;
   private:
     std::fstream file_;
     size_t pos_;

@@ -110,6 +110,36 @@ void tapes::FileTape::simDelay(size_t ms) const
   std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
+tapes::Converter::Converter(const std::string& filename):
+  filename_(filename)
+{}
+
+void tapes::Converter::toBinary() const
+{
+  std::vector< int > values;
+  std::ifstream in(filename_);
+  if (!in)
+  {
+    throw std::runtime_error("Cannot open file: " + filename_);
+  }
+  int value;
+  while (in >> value)
+  {
+    values.push_back(value);
+  }
+  in.close();
+
+  std::ofstream out(filename_, std::ios::binary | std::ios::trunc);
+  if (!out)
+  {
+    throw std::runtime_error("Cannot open file: " + filename_);
+  }
+  for (auto it = values.begin(); it != values.end(); ++it)
+  {
+    out.write(reinterpret_cast< const char* >(&(*it)), sizeof((*it)));
+  }
+}
+
 tapes::Sorter::Sorter(std::shared_ptr< FileTape > inTape, std::shared_ptr< FileTape > outTape, size_t ramSize):
   inTape_(inTape),
   outTape_(outTape),

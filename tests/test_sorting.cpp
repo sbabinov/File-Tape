@@ -4,15 +4,19 @@
 #include <iterator>
 #include <memory>
 #include <cstdio>
+#include <filesystem>
 #include "gtest/gtest.h"
 #include "../src/tapes.hpp"
 #include "../src/converter.hpp"
+
+namespace fs = std::filesystem;
 
 class TapeSortTest: public testing::TestWithParam< size_t >
 {
 protected:
     void SetUp() override
     {
+      fs::create_directory(tapes::TEMP_TAPES_PATH);
       testNum = GetParam();
       inFilename = "../tests/tapes/inp" + std::to_string(testNum) + ".tp";
       outFilename = "../tests/tapes/out" + std::to_string(testNum) + ".tp";

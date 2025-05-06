@@ -1,10 +1,13 @@
 #include <iostream>
 #include <memory>
+#include <filesystem>
 #include "tapes.hpp"
 #include "converter.hpp"
 
 int main(int argc, char* argv[])
 {
+  namespace fs = std::filesystem;
+
   size_t ramLimit = 0;
   if (argc < 3)
   {
@@ -29,6 +32,8 @@ int main(int argc, char* argv[])
     std::cerr << "Invalid config file" << '\n';
     return 1;
   }
+
+  fs::create_directory(tapes::TEMP_TAPES_PATH);
 
   converter::FileConverter inConverter(argv[1]);
   try

@@ -11,7 +11,7 @@ namespace converter
     void toBinary() const;
     void toText() const;
   private:
-    const std::string& filename_;
+    std::string filename_;
   };
 }
 

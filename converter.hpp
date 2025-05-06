@@ -8,8 +8,8 @@ namespace converter
   {
   public:
     FileConverter(const std::string& filename);
-    void toBinary() const;
-    void toText() const;
+    size_t toBinary() const;
+    size_t toText() const;
   private:
     std::string filename_;
   };

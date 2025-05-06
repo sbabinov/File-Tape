@@ -7,7 +7,7 @@ converter::FileConverter::FileConverter(const std::string& filename):
   filename_(filename)
 {}
 
-void converter::FileConverter::toBinary() const
+size_t converter::FileConverter::toBinary() const
 {
   std::ifstream in(filename_);
   if (!in)
@@ -33,9 +33,10 @@ void converter::FileConverter::toBinary() const
     out.write(reinterpret_cast< const char* >(&(*it)), sizeof((*it)));
   }
   out.close();
+  return values.size();
 }
 
-void converter::FileConverter::toText() const
+size_t converter::FileConverter::toText() const
 {
   std::ifstream in(filename_, std::ios::binary);
   if (!in)
@@ -61,4 +62,5 @@ void converter::FileConverter::toText() const
     out << *it << '\n';
   }
   out.close();
+  return values.size();
 }

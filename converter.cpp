@@ -32,6 +32,7 @@ void converter::FileConverter::toBinary() const
   {
     out.write(reinterpret_cast< const char* >(&(*it)), sizeof((*it)));
   }
+  out.close();
 }
 
 void converter::FileConverter::toText() const
@@ -59,4 +60,5 @@ void converter::FileConverter::toText() const
   {
     out << *it << '\n';
   }
+  out.close();
 }

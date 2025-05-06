@@ -6,7 +6,6 @@
 #include <chrono>
 #include <tuple>
 #include <vector>
-#include <iostream>
 
 tapes::Tape::Tape(size_t size):
   size_(size),
@@ -116,7 +115,7 @@ tapes::Sorter::Sorter(std::shared_ptr< FileTape > inTape, std::shared_ptr< FileT
   ramLimit_(ramSize)
 {}
 
-void tapes::Sorter::sort()
+void tapes::Sorter::operator()()
 {
   std::vector< std::shared_ptr< FileTape > > tempTapes;
 
@@ -128,11 +127,10 @@ void tapes::Sorter::sort()
     {
       tapeSize = inTape_->size() - inTape_->pos();
     }
-
     std::vector< int > ram(tapeSize);
     for (size_t i = 0; i < tapeSize; ++i)
     {
-      ram.push_back(inTape_->read());
+      ram[i] = inTape_->read();
       inTape_->moveForward();
     }
     std::sort(ram.begin(), ram.end());

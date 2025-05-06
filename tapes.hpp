@@ -57,7 +57,7 @@ namespace tapes
   {
   public:
     Sorter(std::shared_ptr< FileTape > inTape, std::shared_ptr< FileTape > outTape, size_t ramSize);
-    void sort();
+    void operator()();
   private:
     std::shared_ptr< FileTape > inTape_;
     std::shared_ptr< FileTape > outTape_;

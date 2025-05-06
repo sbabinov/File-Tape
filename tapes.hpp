@@ -1,5 +1,6 @@
 #ifndef TAPES_HPP
 #define TAPES_HPP
+#include <istream>
 #include <fstream>
 #include <memory>
 #include <string>
@@ -15,6 +16,7 @@ namespace tapes
     size_t moveDelay;
     size_t rewindDelay;
   };
+  std::istream& operator>>(std::istream& in, Config& config);
 
   class Tape
   {

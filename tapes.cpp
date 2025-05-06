@@ -7,6 +7,32 @@
 #include <chrono>
 #include <tuple>
 #include <vector>
+#include <utility>
+#include "delimiters.hpp"
+
+std::istream& tapes::operator>>(std::istream& in, Config& config)
+{
+  std::istream::sentry sentry(in);
+  if (!sentry)
+  {
+    return in;
+  }
+
+  using cDel = delimiters::CharDelimiter;
+  using sDel = delimiters::StringDelimiter;
+
+  Config temp;
+  in >> sDel{"READ_DELAY"} >> cDel{'='} >> temp.readDelay;
+  in >> sDel{"WRITE_DELAY"} >> cDel{'='} >> temp.writeDelay;
+  in >> sDel{"MOVE_DELAY"} >> cDel{'='} >> temp.moveDelay;
+  in >> sDel{"REWIND_DELAY"} >> cDel{'='} >> temp.rewindDelay;
+
+  if (in)
+  {
+    config = std::move(temp);
+  }
+  return in;
+}
 
 tapes::Tape::Tape(size_t size):
   size_(size),

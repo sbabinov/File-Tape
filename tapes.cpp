@@ -110,64 +110,6 @@ void tapes::FileTape::simDelay(size_t ms) const
   std::this_thread::sleep_for(std::chrono::milliseconds(ms));
 }
 
-tapes::Converter::Converter(const std::string& filename):
-  filename_(filename)
-{}
-
-void tapes::Converter::toBinary() const
-{
-  std::ifstream in(filename_);
-  if (!in)
-  {
-    throw std::runtime_error("Cannot open file: " + filename_);
-  }
-
-  std::vector< int > values;
-  int value;
-  while (in >> value)
-  {
-    values.push_back(value);
-  }
-  in.close();
-
-  std::ofstream out(filename_, std::ios::binary | std::ios::trunc);
-  if (!out)
-  {
-    throw std::runtime_error("Cannot open file: " + filename_);
-  }
-  for (auto it = values.begin(); it != values.end(); ++it)
-  {
-    out.write(reinterpret_cast< const char* >(&(*it)), sizeof((*it)));
-  }
-}
-
-void tapes::Converter::toText() const
-{
-  std::ifstream in(filename_, std::ios::binary);
-  if (!in)
-  {
-    throw std::runtime_error("Cannot open file: " + filename_);
-  }
-
-  std::vector< int > values;
-  int value;
-  while (in.read(reinterpret_cast< char* >(&value), sizeof(value)))
-  {
-    values.push_back(value);
-  }
-  in.close();
-
-  std::ofstream out(filename_, std::ios::trunc);
-  if (!out)
-  {
-    throw std::runtime_error("Cannot open file: " + filename_);
-  }
-  for (auto it = values.begin(); it != values.end(); ++it)
-  {
-    out << *it << '\n';
-  }
-}
-
 tapes::Sorter::Sorter(std::shared_ptr< FileTape > inTape, std::shared_ptr< FileTape > outTape, size_t ramSize):
   inTape_(inTape),
   outTape_(outTape),

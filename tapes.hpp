@@ -53,16 +53,6 @@ namespace tapes
     void simDelay(size_t ms) const;
   };
 
-  class Converter
-  {
-  public:
-    Converter(const std::string& filename);
-    void toBinary() const;
-    void toText() const;
-  private:
-    const std::string& filename_;
-  };
-
   class Sorter
   {
   public:

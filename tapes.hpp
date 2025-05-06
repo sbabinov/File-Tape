@@ -58,6 +58,7 @@ namespace tapes
   public:
     Converter(const std::string& filename);
     void toBinary() const;
+    void toText() const;
   private:
     const std::string& filename_;
   };

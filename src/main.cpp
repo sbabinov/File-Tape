@@ -5,7 +5,7 @@
 
 int main(int argc, char* argv[])
 {
-  size_t ramLimit;
+  size_t ramLimit = 0;
   if (argc < 3)
   {
     std::cerr << "Invalid parameters" << '\n';
@@ -31,17 +31,28 @@ int main(int argc, char* argv[])
   }
 
   converter::FileConverter inConverter(argv[1]);
-  converter::FileConverter outConverter(argv[2]);
-  size_t inTapeSize = inConverter.toBinary();
-  size_t outTapeSize = outConverter.toBinary();
+  try
+  {
+    converter::FileConverter outConverter(argv[2]);
+    outConverter.toBinary();
+  }
+  catch(const std::runtime_error&)
+  {}
 
-  auto inTape = std::make_shared< tapes::FileTape >(argv[1], inTapeSize, config);
-  auto outTape = std::make_shared< tapes::FileTape >(argv[2], outTapeSize, config);
+  size_t tapeSize = inConverter.toBinary();
 
-  tapes::Sorter sorter(inTape, outTape, 7);
+  auto inTape = std::make_shared< tapes::FileTape >(argv[1], tapeSize, config);
+  auto outTape = std::make_shared< tapes::FileTape >(argv[2], tapeSize, config);
+  if (ramLimit == 0)
+  {
+    ramLimit = inTape->size();
+  }
+
+  tapes::Sorter sorter(inTape, outTape, ramLimit);
   sorter();
 
   inConverter.toText();
+  converter::FileConverter outConverter(argv[2]);
   outConverter.toText();
 
   return 0;

@@ -7,6 +7,7 @@
 #include <chrono>
 #include <tuple>
 #include <vector>
+#include <exception>
 #include <utility>
 #include "delimiters.hpp"
 

@@ -1,11 +1,16 @@
 #include "tapes.hpp"
+#include <algorithm>
 #include <ios>
-#include <iostream>
 #include <thread>
+#include <list>
 #include <chrono>
+#include <tuple>
+#include <vector>
+#include <iostream>
 
 tapes::Tape::Tape(size_t size):
-  size_(size)
+  size_(size),
+  pos_(0)
 {}
 
 size_t tapes::Tape::size() const
@@ -13,9 +18,13 @@ size_t tapes::Tape::size() const
   return size_;
 }
 
+size_t tapes::Tape::pos() const
+{
+  return pos_;
+}
+
 tapes::FileTape::FileTape(const std::string& filename, size_t size, const Config& config):
   Tape(size),
-  pos_(0),
   config_(config)
 {
   file_.open(filename, std::ios::in | std::ios::out | std::ios::binary);
@@ -44,6 +53,11 @@ tapes::FileTape::~FileTape()
   {
     file_.close();
   }
+}
+
+tapes::Config tapes::FileTape::getConfig() const
+{
+  return config_;
 }
 
 int tapes::FileTape::read()
@@ -94,4 +108,72 @@ void tapes::FileTape::rewind()
 void tapes::FileTape::simDelay(size_t ms) const
 {
   std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+}
+
+tapes::Sorter::Sorter(std::shared_ptr< FileTape > inTape, std::shared_ptr< FileTape > outTape, size_t ramSize):
+  inTape_(inTape),
+  outTape_(outTape),
+  ramLimit_(ramSize)
+{}
+
+void tapes::Sorter::sort()
+{
+  std::vector< std::shared_ptr< FileTape > > tempTapes;
+
+  size_t tapeNum = 1;
+  while (inTape_->pos() < inTape_->size())
+  {
+    size_t tapeSize = ramLimit_;
+    if (inTape_->size() - inTape_->pos() < ramLimit_)
+    {
+      tapeSize = inTape_->size() - inTape_->pos();
+    }
+
+    std::vector< int > ram(tapeSize);
+    for (size_t i = 0; i < tapeSize; ++i)
+    {
+      ram.push_back(inTape_->read());
+      inTape_->moveForward();
+    }
+    std::sort(ram.begin(), ram.end());
+
+    auto tempTape = std::make_shared< FileTape >(TEMP_TAPES_PATH + std::to_string(tapeNum) + ".tp",
+      tapeSize, inTape_->getConfig());
+    for (auto it = ram.begin(); it != ram.end(); ++it)
+    {
+      tempTape->write(*it);
+      tempTape->moveForward();
+    }
+    tempTape->rewind();
+    tempTapes.push_back(tempTape);
+    ++tapeNum;
+  }
+
+  using ElementInfo = std::tuple< int, size_t, size_t >;
+  std::list< ElementInfo > ram;
+  for (size_t i = 0; i < tempTapes.size(); ++i)
+  {
+    ram.push_back({tempTapes[i]->read(), i, 0});
+    tempTapes[i]->moveForward();
+  }
+
+  auto pred = [&](const ElementInfo& el1, const ElementInfo& el2) -> bool
+  {
+    return std::get< 0 >(el1) < std::get< 0 >(el2);
+  };
+
+  while (!ram.empty())
+  {
+    auto it = std::min_element(ram.begin(), ram.end(), pred);
+    auto [value, tapeInd, pos] = *it;
+    outTape_->write(value);
+    outTape_->moveForward();
+
+    if (tempTapes[tapeInd]->pos() < tempTapes[tapeInd]->size())
+    {
+      ram.push_back({tempTapes[tapeInd]->read(), tapeInd, pos + 1});
+      tempTapes[tapeInd]->moveForward();
+    }
+    ram.erase(it);
+  }
 }

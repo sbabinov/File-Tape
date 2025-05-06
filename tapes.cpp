@@ -1,5 +1,6 @@
 #include "tapes.hpp"
 #include <algorithm>
+#include <cstdio>
 #include <ios>
 #include <thread>
 #include <list>
@@ -173,5 +174,11 @@ void tapes::Sorter::operator()()
       tempTapes[tapeInd]->moveForward();
     }
     ram.erase(it);
+  }
+
+  for (size_t i = 0; i < tempTapes.size(); ++i)
+  {
+    std::string filename = TEMP_TAPES_PATH + std::to_string(i + 1) + ".tp";
+    std::remove(filename.c_str());
   }
 }
